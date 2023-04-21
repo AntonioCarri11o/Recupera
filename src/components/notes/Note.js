@@ -4,32 +4,27 @@ import { deleteDoc,doc,updateDoc } from "@firebase/firestore";
 import { StyleSheet, Text, View } from "react-native";
 import { Icon, ListItem } from "react-native-elements";
 import Modal from "../common/Modal";
-import UpdatePersonForm from "./UpdatePersonForm";
+import UpdateNoteForm from "./UpdateNoteForm";
 
-export default function Person({
+export default function Note({
     id,
-    name,
-    lastname,
-    phone_number,
-    email
+    title,
+    content
 }){
     const [showModal,setShowModal]=useState(false);
-    const [contained,setContained]=useState(null);
+    const [contained, setContained]=useState(null);
+    const onClose=()=>{setShowModal((prevState)=>!prevState),setContained(<UpdateNoteForm close={onClose} id={id} title={title} content={content}/>)}
 
-    const onClose=()=>{setShowModal((prevState)=>!prevState),
-        setContained(<UpdatePersonForm close={onClose} id={id} name={name} lastname={lastname} phone_number={phone_number} email={email} />)};
     return(
         <View style={styles.container} >
             <ListItem containerStyle={styles.row} onPress={onClose}>
-             <Icon type="material-community" name="account" iconStyle={styles.icon}/>
+             <Icon type="material-community" name="note" iconStyle={styles.icon}/>
              <View style={styles.column}>
-                <Text style={styles.text}>{" "+name+" "+lastname}</Text>
-                <Text style={styles.text}>{" "+phone_number}</Text>
+                <Text style={styles.text}>{" "+title}</Text>
              </View>
             </ListItem>            
             <Modal visible={showModal} close={onClose}>{contained}</Modal>
         </View>
-        
     )
 }
 const styles=StyleSheet.create({
@@ -55,4 +50,3 @@ const styles=StyleSheet.create({
         fontSize:45
     }
 })
-

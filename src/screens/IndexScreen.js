@@ -15,7 +15,7 @@ export default function IndexScreen(){
     })},[])
     useEffect(()=>{
         const collectionRef=collection(database,'persons');
-        const q=query(collectionRef,orderBy('name','desc'));
+        const q=query(collectionRef,orderBy('name','asc'));
 
         const unsuscribe=onSnapshot(q, querySnapshot=>{
             querySnapshot.docs.map(doc=>(console.log(doc.data())))
@@ -32,7 +32,6 @@ export default function IndexScreen(){
         return unsuscribe;
     },[])
     return session? (
-
         <SafeAreaView>
             <ScrollView>
                 {persons.map(person => <Person key={person.id} {...person}/>)}

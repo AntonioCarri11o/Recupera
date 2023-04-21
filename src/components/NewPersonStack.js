@@ -7,7 +7,7 @@ const Stack= createNativeStackNavigator();
 export default function NewPersonStack(){
     return(
         <Stack.Navigator>
-            <Stack.Screen name="newPerson" component={NewPersonScreen} options={{title:"Inicio"}}/>
+            <Stack.Screen name="newPerson" component={NewPersonScreen} options={{title:"Nuevo Contacto"}}/>
         </Stack.Navigator>
     )
 }

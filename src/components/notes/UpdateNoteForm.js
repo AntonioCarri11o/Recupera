@@ -4,14 +4,19 @@ import { StyleSheet, Text, View, TextInput } from 'react-native';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import { database } from '../../utils/firebase';
-import { addDoc, collection } from 'firebase/firestore';
+import { updateDoc, collection, doc, deleteDoc } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 import { Toast } from 'react-native-toast-message/lib/src/Toast';
 
-export default function NewNoteForm(){
+export default function UpdateNoteForm(props){
     const navigation=useNavigation();
-    const [content, setContent]=useState(null);
-    const [title,setTitle]=useState(null);
+    const [content, setContent]=useState(props.content);
+    const [title,setTitle]=useState(props.title);
+    const onDelete=()=>{
+        const docRef=doc(database,'notes',props.id);
+        deleteDoc(docRef);
+        props.close();
+    }
     const formik=useFormik({
         initialValues:{
             title:title,
@@ -24,16 +29,15 @@ export default function NewNoteForm(){
         validateOnChange:false,
         onSubmit:async(formValue)=>{
             try{
-                await addDoc(collection(database,'notes'),formValue);
-                navigation.navigate('newNote');
+                const docRef=doc(database,'notes',props.id)
+                await updateDoc(docRef,{title:title,content:content})
+                props.close();
                 Toast.show({
                     type:'success',
                     text1:'Exito',
                     text2:"Nota guardada con éxito",
                     position:'top',
                 })
-                setTitle(null);
-                setContent(null);
             }catch(error){
                 console.log(error);
                 Toast.show({
@@ -59,15 +63,28 @@ export default function NewNoteForm(){
             onChangeText={(text)=>{formik.setFieldValue('content',text); setContent(text)}}
             numberOfLines={20}
             style={styles.note}/>
-            <Button title="Guardar"
-            containerStyle={styles.containerBtn}
-            buttonStyle={styles.btn}
-            onPress={formik.handleSubmit} loading={formik.isSubmitting}/>
+            <View style={styles.row}>
+                <Button title="Eliminar"
+                containerStyle={styles.containerBtn}
+                buttonStyle={styles.btnDel}
+                onPress={onDelete}
+                loading={formik.isSubmitting}            
+                />
+                <Button title="Guardar"
+                containerStyle={styles.containerBtn}
+                buttonStyle={styles.btn}
+                onPress={formik.handleSubmit}/>                
+            </View>
         </View>
     )
 }
 
 const styles=StyleSheet.create({
+    row:{
+        marginTop:10,
+        flexDirection:'row',
+        justifyContent:'center',
+    },
     content:{
         margin:20,
     },
@@ -88,12 +105,14 @@ const styles=StyleSheet.create({
         fontSize:20
     },
     containerBtn:{
-        width:"95%",
-        marginTop:20,
+        width:"40%",
+        margin:10,
         alignSelf:"center"
-    
       },
       btn:{
         backgroundColor:"blue"
+      },
+      btnDel:{
+        backgroundColor:"red"
       }
 })
